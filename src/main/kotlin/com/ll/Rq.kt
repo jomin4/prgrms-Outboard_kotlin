@@ -21,4 +21,8 @@ class Rq(command: String) {
     fun getParamAsInt(key: String, defaultValue: Int): Int {
         return params[key]?.toIntOrNull() ?: defaultValue
     }
+
+    fun getParam(key: String, defaultValue: String): String {
+        return params[key] ?: defaultValue
+    }
 }

@@ -9,8 +9,8 @@ class WiseSayingService(
         return id
     }
 
-    fun getWiseSayings(): List<WiseSaying> {
-        return wiseSayingRepository.findAll()
+    fun getWiseSayings(keywordType: String = "", keyword: String = ""): List<WiseSaying> {
+        return wiseSayingRepository.findAll(keywordType, keyword)
     }
 
     fun getWiseSaying(id: Int): WiseSaying? {

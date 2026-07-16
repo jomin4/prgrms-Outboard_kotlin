@@ -58,8 +58,17 @@ class WiseSayingRepository {
         saveWiseSayingToFile(wiseSaying)
     }
 
-    fun findAll(): List<WiseSaying> {
-        return wiseSayings
+    fun findAll(keywordType: String = "", keyword: String = ""): List<WiseSaying> {
+        if (keyword.isBlank()) {
+            return wiseSayings
+        }
+
+        return wiseSayings.filter {
+            when (keywordType) {
+                "author" -> it.author.contains(keyword)
+                else -> it.content.contains(keyword)
+            }
+        }
     }
 
     fun findById(id: Int): WiseSaying? {

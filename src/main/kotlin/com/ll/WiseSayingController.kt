@@ -15,11 +15,23 @@ class WiseSayingController(
         println("${id}번 명언이 등록되었습니다.")
     }
 
-    fun list() {
+    fun list(rq: Rq) {
+        val keywordType = rq.getParam("keywordType", "")
+        val keyword = rq.getParam("keyword", "")
+
+        val wiseSayings = wiseSayingService.getWiseSayings(keywordType, keyword)
+
+        if (keyword.isNotBlank()) {
+            println("----------------------")
+            println("검색타입 : $keywordType")
+            println("검색어 : $keyword")
+        }
+
+        println("----------------------")
         println("번호 / 작가 / 명언")
         println("----------------------")
 
-        for (wiseSaying in wiseSayingService.getWiseSayings().reversed()) {
+        for (wiseSaying in wiseSayings.reversed()) {
             println("${wiseSaying.id} / ${wiseSaying.author} / ${wiseSaying.content}")
         }
     }

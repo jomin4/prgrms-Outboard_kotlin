@@ -22,7 +22,7 @@ class App {
             }
 
             if (rq.action == "목록") {
-                wiseSayingController.list()
+                wiseSayingController.list(rq)
             }
 
             if (rq.action == "삭제") {
