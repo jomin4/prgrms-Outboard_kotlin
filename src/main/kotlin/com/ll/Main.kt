@@ -3,6 +3,8 @@ package com.ll
 fun main() {
     println("명언앱")
 
+    var lastId = 0
+
 
     while (true) {
         print("명령)")
@@ -19,7 +21,9 @@ fun main() {
             print("작가 : ")
             val author = readln()
 
-            println("1번 명언이 등록되었습니다.")
+            lastId++
+
+            println("${lastId}번 명언이 등록되었습니다.")
         }
     }
 }
