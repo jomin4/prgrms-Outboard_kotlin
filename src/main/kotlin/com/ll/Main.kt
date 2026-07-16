@@ -70,7 +70,12 @@ fun main() {
         if (rq.action == "삭제") {
             val id = rq.getParamAsInt("id", 0)
 
-            val wiseSaying = wiseSayings.first { it.id == id }
+            val wiseSaying = wiseSayings.firstOrNull { it.id == id }
+
+            if (wiseSaying == null) {
+                println("${id}번 명언은 존재하지않습니다.")
+                continue
+            }
             wiseSayings.remove(wiseSaying)
 
             println("${id}번 명언이 삭제되었습니다.")
