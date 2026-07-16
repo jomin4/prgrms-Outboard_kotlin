@@ -18,6 +18,8 @@ fun main() {
 
             print("작가 : ")
             val author = readln()
+
+            println("1번 명언이 등록되었습니다.")
         }
     }
 }
