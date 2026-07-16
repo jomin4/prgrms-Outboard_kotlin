@@ -2,8 +2,8 @@ package com.ll
 
 class WiseSaying(
     val id: Int,
-    val content: String,
-    val author: String
+    var content: String,
+    var author: String
 )
 
 class Rq(command: String) {
@@ -79,6 +79,27 @@ fun main() {
             wiseSayings.remove(wiseSaying)
 
             println("${id}번 명언이 삭제되었습니다.")
+        }
+
+        if (rq.action == "수정") {
+            val id = rq.getParamAsInt("id",0)
+
+            val wiseSaying = wiseSayings.firstOrNull { it.id == id }
+
+            if (wiseSaying == null) {
+                println("${id}번 명언은 존재하지 않습니다.")
+                continue
+            }
+
+            println("명언(기존) : ${wiseSaying.content}")
+            print("명언 : ")
+            wiseSaying.content = readln()
+
+            println("작가(기존) : ${wiseSaying.author}")
+            print("작가 : ")
+            wiseSaying.author = readln()
+
+
         }
     }
 }
