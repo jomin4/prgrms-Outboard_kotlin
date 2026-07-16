@@ -11,5 +11,13 @@ fun main() {
         if(command == "종료") {
             break
         }
+
+        if (command == "등록") {
+            print("명언 : ")
+            val content = readln()
+
+            print("작가 : ")
+            val author = readln()
+        }
     }
 }

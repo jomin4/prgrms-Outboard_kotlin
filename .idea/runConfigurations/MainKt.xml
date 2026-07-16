@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration name="MainKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.ll.MainKt" />
+    <module name="kotlin-wiseSaying.main" />
+    <shortenClasspath name="NONE" />
+    <option name="VM_PARAMETERS" value="-Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

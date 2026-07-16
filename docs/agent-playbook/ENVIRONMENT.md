@@ -32,6 +32,21 @@ Gradle 8.10은 Java 23까지만 지원. 시스템에 설치된 JDK가 25라서 G
 **왜 두 곳에 다 설정해야 하나**
 `gradle.properties`는 CLI(`gradlew`)가 읽는 설정이고, IntelliJ는 자체 프로젝트 JDK(`misc.xml`의 `project-jdk-name`)를 우선 사용하려 하기 때문에 별도로 `.idea/gradle.xml`에 Gradle JVM을 지정해줘야 함. 하나만 설정하면 터미널과 IDE 중 한쪽만 빌드에 성공하는 상황이 생김.
 
+### 문제: Windows 콘솔에서 한글 출력이 `◊◊◊◊`로 깨짐
+
+**증상**
+IntelliJ Run 창에서 `println("명언앱")`이 마름모 문자로 깨져 나옴.
+
+**원인**
+JDK 18+부터 `file.encoding`은 기본 UTF-8이지만, `System.out`은 별도로 Windows 네이티브 코드페이지(한글 Windows는 MS949)를 따름. 콘솔이 UTF-8로 디코딩을 시도하면서 불일치 발생.
+
+**해결**
+- Run Configuration에 VM 옵션 `-Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8` 추가
+- **이 설정을 `.idea/runConfigurations/MainKt.xml`로 영구 저장하고 git에 커밋**해서, 다음에 프로젝트를 새로 열거나 클론해도 매번 수동으로 재설정할 필요가 없게 함. IntelliJ의 기본 임시(temporary) 실행 설정은 워크스페이스 로컬 상태라 공유되지 않으므로, 반드시 "공유 가능한 실행 구성"(Save configuration)으로 전환해야 재현성이 생김
+- `build.gradle.kts`의 `tasks.test`에도 동일 VM 인자를 추가해 12단계(TDD) 테스트 실행 시에도 동일 문제가 재현되지 않도록 선반영
+
+**컨벤션화**: Windows에서 콘솔 출력이 있는 Kotlin 프로젝트를 새로 세팅할 때는 이 인코딩 옵션을 실행 구성 생성과 동시에 기본으로 넣어둔다. 문제가 생긴 뒤에 고치는 게 아니라 세팅 단계에 포함시키는 것이 하네스 엔지니어링 원칙에 맞다.
+
 ## 재현 방법
 
 새 환경(또는 다음 프로젝트)에서는 [`scripts/setup-env.ps1`](../../scripts/setup-env.ps1)을 실행하면 위 과정이 전부 자동화됩니다.

@@ -1,6 +1,8 @@
 .gradle/
 build/
 db/
-.idea/
 .kotlin/
+.idea/*
+!.idea/runConfigurations
+!.idea/runConfigurations/**
 !gradle/wrapper/gradle-wrapper.jar
