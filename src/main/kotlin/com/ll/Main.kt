@@ -1,5 +1,7 @@
 package com.ll
 
+import java.io.File
+
 class WiseSaying(
     val id: Int,
     var content: String,
@@ -29,11 +31,68 @@ class Rq(command: String) {
     }
 }
 
+val wiseSayingDbDir = File("db/wiseSaying")
+
+fun saveWiseSayingToFile(wiseSaying: WiseSaying) {
+    wiseSayingDbDir.mkdirs()
+
+    val json = """
+        {
+          "id": ${wiseSaying.id},
+          "content": "${wiseSaying.content}",
+          "author": "${wiseSaying.author}"
+        }
+    """.trimIndent()
+
+    File(wiseSayingDbDir, "${wiseSaying.id}.json").writeText(json)
+}
+
+fun deleteWiseSayingFile(id: Int) {
+    File(wiseSayingDbDir, "$id.json").delete()
+}
+
+fun loadWiseSayingFromFile(file: File): WiseSaying {
+    val lines = file.readText().lines()
+
+    val id = lines[1].substringAfter(":").trim().removeSuffix(",").toInt()
+    val content = lines[2].substringAfter(":").trim().removeSuffix(",").removeSurrounding("\"")
+    val author = lines[3].substringAfter(":").trim().removeSurrounding("\"")
+
+    return WiseSaying(id, content, author)
+}
+
+fun loadWiseSayings(): MutableList<WiseSaying> {
+    if (!wiseSayingDbDir.exists()) {
+        return mutableListOf()
+    }
+
+    return wiseSayingDbDir.listFiles { file -> file.name.endsWith(".json") }
+        ?.map { loadWiseSayingFromFile(it) }
+        ?.sortedBy { it.id }
+        ?.toMutableList()
+        ?: mutableListOf()
+}
+
+fun saveLastId(lastId: Int) {
+    wiseSayingDbDir.mkdirs()
+    File(wiseSayingDbDir, "lastId.txt").writeText(lastId.toString())
+}
+
+fun loadLastId(): Int {
+    val file = File(wiseSayingDbDir, "lastId.txt")
+
+    if (!file.exists()) {
+        return 0
+    }
+
+    return file.readText().trim().toInt()
+}
+
 fun main() {
     println("== 명언 앱 ==")
 
-    var lastId = 0
-    val wiseSayings = mutableListOf<WiseSaying>()
+    var lastId = loadLastId()
+    val wiseSayings = loadWiseSayings()
 
     while (true) {
         print("명령) ")
@@ -53,7 +112,11 @@ fun main() {
 
             lastId++
 
-            wiseSayings.add(WiseSaying(lastId, content, author))
+            val wiseSaying = WiseSaying(lastId, content, author)
+            wiseSayings.add(wiseSaying)
+
+            saveWiseSayingToFile(wiseSaying)
+            saveLastId(lastId)
 
             println("${lastId}번 명언이 등록되었습니다.")
         }
@@ -73,16 +136,18 @@ fun main() {
             val wiseSaying = wiseSayings.firstOrNull { it.id == id }
 
             if (wiseSaying == null) {
-                println("${id}번 명언은 존재하지않습니다.")
+                println("${id}번 명언은 존재하지 않습니다.")
                 continue
             }
+
             wiseSayings.remove(wiseSaying)
+            deleteWiseSayingFile(id)
 
             println("${id}번 명언이 삭제되었습니다.")
         }
 
         if (rq.action == "수정") {
-            val id = rq.getParamAsInt("id",0)
+            val id = rq.getParamAsInt("id", 0)
 
             val wiseSaying = wiseSayings.firstOrNull { it.id == id }
 
@@ -99,7 +164,7 @@ fun main() {
             print("작가 : ")
             wiseSaying.author = readln()
 
-
+            saveWiseSayingToFile(wiseSaying)
         }
     }
 }
