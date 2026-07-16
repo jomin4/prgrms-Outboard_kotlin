@@ -33,18 +33,29 @@ class Rq(command: String) {
 
 val wiseSayingDbDir = File("db/wiseSaying")
 
-fun saveWiseSayingToFile(wiseSaying: WiseSaying) {
-    wiseSayingDbDir.mkdirs()
-
-    val json = """
+fun WiseSaying.toJsonStr(): String {
+    return """
         {
-          "id": ${wiseSaying.id},
-          "content": "${wiseSaying.content}",
-          "author": "${wiseSaying.author}"
+          "id": $id,
+          "content": "$content",
+          "author": "$author"
         }
     """.trimIndent()
+}
 
-    File(wiseSayingDbDir, "${wiseSaying.id}.json").writeText(json)
+fun saveWiseSayingToFile(wiseSaying: WiseSaying) {
+    wiseSayingDbDir.mkdirs()
+    File(wiseSayingDbDir, "${wiseSaying.id}.json").writeText(wiseSaying.toJsonStr())
+}
+
+fun buildDataJson(wiseSayings: List<WiseSaying>) {
+    val itemsJson = wiseSayings
+        .sortedBy { it.id }
+        .joinToString(",\n") { it.toJsonStr().prependIndent("  ") }
+
+    val json = "[\n$itemsJson\n]"
+
+    File("data.json").writeText(json)
 }
 
 fun deleteWiseSayingFile(id: Int) {
@@ -166,5 +177,11 @@ fun main() {
 
             saveWiseSayingToFile(wiseSaying)
         }
+
+        if (rq.action == "빌드") {
+            buildDataJson(wiseSayings)
+            println("data.json 파일의 내용이 갱신되었습니다.")
+        }
+
     }
 }
