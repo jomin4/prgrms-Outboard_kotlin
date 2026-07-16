@@ -58,17 +58,27 @@ class WiseSayingRepository {
         saveWiseSayingToFile(wiseSaying)
     }
 
-    fun findAll(keywordType: String = "", keyword: String = ""): List<WiseSaying> {
-        if (keyword.isBlank()) {
-            return wiseSayings
-        }
-
-        return wiseSayings.filter {
-            when (keywordType) {
-                "author" -> it.author.contains(keyword)
-                else -> it.content.contains(keyword)
+    fun findAllPaged(keywordType: String, keyword: String, page: Int, pageSize: Int): Page<WiseSaying> {
+        val filtered = if (keyword.isBlank()) {
+            wiseSayings
+        } else {
+            wiseSayings.filter {
+                when (keywordType) {
+                    "author" -> it.author.contains(keyword)
+                    else -> it.content.contains(keyword)
+                }
             }
         }
+
+        val sorted = filtered.reversed()
+
+        val totalPages = if (sorted.isEmpty()) 1 else ((sorted.size - 1) / pageSize) + 1
+        val safePage = page.coerceIn(1, totalPages)
+
+        val fromIndex = ((safePage - 1) * pageSize).coerceAtMost(sorted.size)
+        val toIndex = (fromIndex + pageSize).coerceAtMost(sorted.size)
+
+        return Page(sorted.subList(fromIndex, toIndex), safePage, totalPages)
     }
 
     fun findById(id: Int): WiseSaying? {

@@ -18,22 +18,30 @@ class WiseSayingController(
     fun list(rq: Rq) {
         val keywordType = rq.getParam("keywordType", "")
         val keyword = rq.getParam("keyword", "")
+        val page = rq.getParamAsInt("page", 1)
 
-        val wiseSayings = wiseSayingService.getWiseSayings(keywordType, keyword)
+        val pageResult = wiseSayingService.getWiseSayings(keywordType, keyword, page)
 
         if (keyword.isNotBlank()) {
             println("----------------------")
             println("검색타입 : $keywordType")
             println("검색어 : $keyword")
+            println("----------------------")
         }
 
-        println("----------------------")
         println("번호 / 작가 / 명언")
         println("----------------------")
 
-        for (wiseSaying in wiseSayings.reversed()) {
+        for (wiseSaying in pageResult.items) {
             println("${wiseSaying.id} / ${wiseSaying.author} / ${wiseSaying.content}")
         }
+
+        println("----------------------")
+        println("페이지 : ${renderPageLine(pageResult.currentPage, pageResult.totalPages)}")
+    }
+
+    private fun renderPageLine(currentPage: Int, totalPages: Int): String {
+        return (1..totalPages).joinToString(" / ") { if (it == currentPage) "[$it]" else "$it" }
     }
 
     fun delete(rq: Rq) {

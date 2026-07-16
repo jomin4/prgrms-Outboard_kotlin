@@ -116,4 +116,27 @@ class AppTest {
         assertThat(dataJson).contains("\"id\": 1")
         assertThat(dataJson).contains("현재를 사랑하라.")
     }
+
+    @Test
+    fun `페이징 테스트`() {
+        val commands = mutableListOf<String>()
+        for (i in 1..10) {
+            commands.add("등록")
+            commands.add("명언 $i")
+            commands.add("작가 $i")
+        }
+        commands.add("목록")
+        commands.add("목록?page=2")
+        commands.add("종료")
+
+        val output = run(commands.joinToString("\n"))
+
+        assertThat(output).contains("10 / 작가 10 / 명언 10")
+        assertThat(output).contains("6 / 작가 6 / 명언 6")
+        assertThat(output).contains("페이지 : [1] / 2")
+
+        assertThat(output).contains("5 / 작가 5 / 명언 5")
+        assertThat(output).contains("1 / 작가 1 / 명언 1")
+        assertThat(output).contains("페이지 : 1 / [2]")
+    }
 }
